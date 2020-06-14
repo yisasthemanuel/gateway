@@ -1,0 +1,58 @@
+#Puerto de escucha. La convención es que el gateway escuche por el 8760
+server:
+  port: 8760
+
+# Redirecciones del gateway
+# id: yisas-acme -> Redirección de test
+# id: yisas-gproresults -> Redirección para el servicio de resultados de los managers 
+spring:
+  application:
+    name: yisas-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: yisas-acme
+        uri: http://httpbin.org:80
+        predicates:
+        - Path=/get
+        filters:
+        - AddRequestHeader=Hello, World
+      - id: yisas-gproresults
+        uri: ${gproresults.redir.host} #Esto es sensible al entorno (se toma del config-server)
+        predicates:
+        - Path=/gproresults/**
+        filters:
+        - RewritePath=/gproresults(?<segment>/?.*), $\{segment}
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST #Para evitar el envío de la cabecera 'Access-Control-Allow-Origin' duplicado, lo cual no está permitido por los navegadores 
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedOrigins: "${gproresults.origin}" #Esto es sensible al entorno (se toma del config-server)
+            allowedHeaders: "*"
+            allowedMethods: "*"
+
+info:
+  app:
+    name: ${spring.application.name}
+
+# Registro en el servicio de descubrimiento de servicios (eureka)
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true
+
+# Servicios que expone para la recopilación de estadísticas
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - mappings
+        - env
+        - health
+        - info
