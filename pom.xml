@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.jlobato.gateway</groupId>
 	<artifactId>gateway</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2.RELEASE</version>
 	<name>yisas-gateway</name>
 	<description>Este es el Yisas Gateway</description>
 
