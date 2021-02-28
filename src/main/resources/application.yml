@@ -24,6 +24,13 @@ spring:
         filters:
         - RewritePath=/gproresults(?<segment>/?.*), $\{segment}
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST #Para evitar el envío de la cabecera 'Access-Control-Allow-Origin' duplicado, lo cual no está permitido por los navegadores 
+      - id: yisas-gprocategories
+        uri: ${gprocategories.redir.host} #Esto es sensible al entorno (se toma del config-server)
+        predicates:
+        - Path=/gprocategories/**
+        filters:
+        - RewritePath=/gprocategories(?<segment>/?.*), $\{segment}
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST #Para evitar el envío de la cabecera 'Access-Control-Allow-Origin' duplicado, lo cual no está permitido por los navegadores 
       globalcors:
         cors-configurations:
           '[/**]':
